@@ -5,8 +5,7 @@ import nibabel as nib
 import nrrd  
 
 
-
-class MedicalImageDataset(Dataset):
+class CTPEL(Dataset):
     def __init__(self, volume_files, segmentation_files, volume_folder, segmentation_folder, transform=None):
         self.volume_files = volume_files
         self.segmentation_files = segmentation_files
