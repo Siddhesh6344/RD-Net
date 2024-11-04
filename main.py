@@ -5,7 +5,7 @@ from torch.distributed import init_process_group, destroy_process_group
 import time
 import torch.optim as optim
 from model import RDNet
-from Dataloader import CTPEL
+from dataloader import CTPEL
 from trainer import Trainer
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data.distributed import DistributedSampler
