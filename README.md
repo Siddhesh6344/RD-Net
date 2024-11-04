@@ -7,6 +7,9 @@ RD-NET: A Deep Dilated-Receptive Residual Block-Based Network for Multi-class bo
 # Overall structure of RD-Net
 ![alt text](https://github.com/Siddhesh6344/RD-Net/blob/main/Model%20Architecture.png)
 
+# Qualitative comparisions of Model Output
+![alt text](![image](https://github.com/user-attachments/assets/33818670-a1a0-48e4-9f13-3b22746272de))
+
 
 # Instructions for Running the Model
 
