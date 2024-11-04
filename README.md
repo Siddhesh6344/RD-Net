@@ -16,9 +16,7 @@ Requirements:
 pip install -r requirements.txt
 ```
 
-We provide the training pipeline below.
-
-The trained weights have been released (see below) and pre-training data is available upon request.
+The trained weights have been released (see below)
 
 # Instructions for Running the Model
 
