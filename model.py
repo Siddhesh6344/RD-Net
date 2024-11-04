@@ -11,7 +11,7 @@ class residual_block(nn.Module):
         
     def Conv(self, in_channels, out_channels, dilation_rate): 
         return nn.Sequential(
-            nn.Conv3d(in_channels, out_channels, kernel_size=3, padding=dilation_rate, dilation=dilation_rate),
+            nn.Conv3d(in_channels, out_channels, kernel_size=3, padding=dilation_rate, dilation=dilation_rate), #padding = dilation rate for maintaining constant dimensions
             nn.BatchNorm3d(out_channels),
             nn.ReLU(),
          )
