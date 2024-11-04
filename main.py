@@ -6,7 +6,7 @@ import time
 import torch.optim as optim
 from model import RDNet
 from Dataloader import CTPEL
-from Trainer import Trainer
+from trainer import Trainer
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data.distributed import DistributedSampler
 import matplotlib.pyplot as plt
