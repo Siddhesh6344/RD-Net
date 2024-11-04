@@ -7,8 +7,6 @@ from torch.cuda.amp import GradScaler, autocast
 from torch.nn.parallel import DistributedDataParallel as DDP
 
 
-
-
 class Trainer:
     def __init__(
         self,
@@ -40,11 +38,11 @@ class Trainer:
         y_pred = y_pred.to(device)
 
         # Number of classes (channels), assuming shape is [batch, channels, depth, height, width]
-        n_outputs = y_pred.shape[1]  # In this case, it will be 6 (including the background)
+        n_outputs = y_pred.shape[1]  # In this case, it will be 5 (including the background)
 
-        dice = torch.zeros(n_outputs, device=device)  # For storing dice for each class (excluding background)
+        dice = torch.zeros(n_outputs, device=device)  # For storing dice for each class (includng background) 
 
-        # Loop through each class (skip background class 0)
+        # Loop through each class (giving equal weights to all classes)
         for c in range(0, n_outputs):
             pred_class = y_pred[:, c, :, :, :].reshape(-1)  # Flatten the prediction for class c
             true_class = y_true[:, c, :, :, :].reshape(-1)  # Flatten the ground truth for class c
