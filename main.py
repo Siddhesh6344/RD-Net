@@ -1,7 +1,29 @@
+import torch
+from torch.utils.data import DataLoader
+import torch.multiprocessing as mp
+from torch.distributed import init_process_group, destroy_process_group
+import time
+import torch.optim as optim
+from model import RDNet
+from Dataloader import CTPEL
+from Trainer import Trainer
+from torch.nn.parallel import DistributedDataParallel as DDP
+from torch.utils.data.distributed import DistributedSampler
+import matplotlib.pyplot as plt
+import numpy as np
+from torch.cuda.amp import GradScaler, autocast
+import os
 
+volume_folder = 'scratch/param/ss5114/BTP/vol_files'
+segmentation_folder = 'scratch/param/ss5114/BTP/seg_mask'
 
+batch_size = 1
+learning_rate = 1e-4
+num_epochs = 75 # We have trained till 120 epochs to see the model convergence, Model is getting converged after 75 epochs and results are obtained on val_set on 75 epochs
+save_every = 5 
+world_size = torch.cuda.device_count()  # 4 GPUs we have used NVIDIA V100 with VRAM 32GB
 
-def load_data_splits(file_path='data_splits.npz'):
+def load_data_splits(file_path='data_splits.npz'):  #data_splits as 80:20 for train and val set
     data = np.load(file_path)
     train_volumes = data['train_volumes']
     test_volumes = data['test_volumes']
@@ -24,10 +46,10 @@ def ddp_setup(rank, world_size):
     torch.cuda.set_device(rank)
 
 def load_train_objs(train_volumes, train_segmentations, test_volumes, test_segmentations):
-    train_set = MedicalImageDataset(train_volumes, train_segmentations, volume_folder, segmentation_folder)  
-    val_set = MedicalImageDataset(test_volumes, test_segmentations, volume_folder, segmentation_folder)  # Validation data
-    model = PDR_UNet3D(in_channels=1, out_channels=5)  
-    optimizer = optim.Adam(model.parameters(), lr=1e-4)
+    train_set = CTPEL(train_volumes, train_segmentations, volume_folder, segmentation_folder)  
+    val_set = CTPEL(test_volumes, test_segmentations, volume_folder, segmentation_folder)  # Validation data
+    model = RDNet(in_channels=1, out_channels=5)  
+    optimizer = optim.Adam(model.parameters(), lr=1e-4) #adaptive learning rate can be used by Gridsearch or weight moment adpative allocationg
 
     return train_set, val_set, model, optimizer
 
@@ -42,11 +64,8 @@ def prepare_dataloader(dataset: Dataset, batch_size: int):
     )
 
 def main(rank: int, world_size: int, save_every: int, total_epochs: int, batch_size: int):
-    start = time.time()
-
-
-
-    train_volumes, test_volumes, train_segmentations, test_segmentations = load_data_splits(file_path='scratch/xc17/ss5114/BTP/S/sample.npz')
+    start_time = time.time()
+    train_volumes, test_volumes, train_segmentations, test_segmentations = load_data_splits(file_path='scratch/param/ss5114/BTP/S/split.npz')
 
     if rank == 0:
         print(f"Starting training with {world_size} GPUs")
@@ -69,8 +88,8 @@ def main(rank: int, world_size: int, save_every: int, total_epochs: int, batch_s
         plt.grid(True)
         plt.show()
 
-    endd = time.time()
-    print((endd-start)/60)
+    end_time = time.time()
+    print((end_time-start_time)/60) #Total of training and inference time
 
 
 if __name__ == "__main__":
